@@ -1,0 +1,14 @@
+# COMMENT LINE
+// COMMENT LINE
+
+INVALID LINE
+
+# mirror manifest.list.v2
+cnrancher/hardened-skopeo harbor-test/mirrored-hardened-skopeo v1.9.3
+
+# mirror manifest.v2
+cnrancher/hardened-skopeo harbor-test/mirrored-hardened-skopeo v1.10.0-amd64
+cnrancher/hardened-skopeo harbor-test/mirrored-hardened-skopeo v1.10.0-arm64
+
+# mirror manifest.v1
+mysql mirrored-mysql 5.7.5
