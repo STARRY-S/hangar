@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cnrancher/hangar/pkg/image"
+	"github.com/cnrancher/hangar/pkg/mirror/image"
 )
 
 func Test_NewSavedListTemplate(t *testing.T) {

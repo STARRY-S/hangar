@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cnrancher/hangar/pkg/image"
-	"github.com/cnrancher/hangar/pkg/registry"
+	"github.com/cnrancher/hangar/pkg/mirror/image"
+	"github.com/cnrancher/hangar/pkg/skopeo"
 	u "github.com/cnrancher/hangar/pkg/utils"
 	"github.com/containers/image/v5/manifest"
 	"github.com/containers/image/v5/types"
@@ -266,7 +266,7 @@ func (m *Mirror) initSourceDestinationManifest() error {
 
 	// Get source manifest
 	inspectSourceImage := fmt.Sprintf("docker://%s:%s", m.Source, m.Tag)
-	out, err = registry.SkopeoInspect(inspectSourceImage, "--raw")
+	out, err = skopeo.Inspect(inspectSourceImage, "--raw")
 	if err != nil {
 		return fmt.Errorf("inspect source image failed: %w", err)
 	}
@@ -314,7 +314,7 @@ func (m *Mirror) initSourceDestinationManifest() error {
 
 	// Get destination manifest
 	inspectDestImage := fmt.Sprintf("docker://%s:%s", m.Destination, m.Tag)
-	out, err = registry.SkopeoInspect(inspectDestImage, "--raw")
+	out, err = skopeo.Inspect(inspectDestImage, "--raw")
 	if err != nil {
 		// destination image not found, this error is expected
 		return nil
@@ -444,7 +444,7 @@ func (m *Mirror) initImageListByV2() error {
 		func(bi types.BlobInfo) ([]byte, error) {
 			// get source image config
 			sourceImage := fmt.Sprintf("docker://%s:%s", m.Source, m.Tag)
-			o, e := registry.SkopeoInspect(sourceImage, "--raw", "--config")
+			o, e := skopeo.Inspect(sourceImage, "--raw", "--config")
 			return []byte(o), e
 		},
 	)
@@ -466,7 +466,7 @@ func (m *Mirror) initImageListByV2() error {
 		m.sourceImageInfo.Variant)
 	sourceImage := fmt.Sprintf("%s:%s", m.Source, m.Tag)
 	destImage := fmt.Sprintf("%s:%s", m.Destination, copiedTag)
-	digest, err := registry.SkopeoInspect(
+	digest, err := skopeo.Inspect(
 		"docker://"+sourceImage, "--format", "{{ .Digest }}")
 	if err != nil {
 		return fmt.Errorf("initImageListByV2: %w", err)
@@ -493,7 +493,7 @@ func (m *Mirror) initImageListByOCIManifestV1() error {
 	var err error
 	m.sourceImageInfo = &types.ImageInspectInfo{}
 	sourceImage := fmt.Sprintf("docker://%s:%s", m.Source, m.Tag)
-	o, err := registry.SkopeoInspect(sourceImage, "--raw", "--config")
+	o, err := skopeo.Inspect(sourceImage, "--raw", "--config")
 	if err != nil {
 		return fmt.Errorf("initImageListByOCIManifestV1: %w", err)
 	}
@@ -517,7 +517,7 @@ func (m *Mirror) initImageListByOCIManifestV1() error {
 		m.sourceImageInfo.Variant)
 	sourceImage = fmt.Sprintf("%s:%s", m.Source, m.Tag)
 	destImage := fmt.Sprintf("%s:%s", m.Destination, copiedTag)
-	digest, err := registry.SkopeoInspect(
+	digest, err := skopeo.Inspect(
 		"docker://"+sourceImage, "--format", "{{ .Digest }}")
 	if err != nil {
 		return fmt.Errorf("initImageListByOCIManifestV1: %w", err)
@@ -546,7 +546,7 @@ func (m *Mirror) initImageListByV1() error {
 		func(bi types.BlobInfo) ([]byte, error) {
 			// get source image config
 			sourceImage := fmt.Sprintf("docker://%s:%s", m.Source, m.Tag)
-			o, e := registry.SkopeoInspect(sourceImage, "--raw", "--config")
+			o, e := skopeo.Inspect(sourceImage, "--raw", "--config")
 			return []byte(o), e
 		},
 	)
@@ -568,7 +568,7 @@ func (m *Mirror) initImageListByV1() error {
 		m.sourceImageInfo.Variant)
 	sourceImage := fmt.Sprintf("%s:%s", m.Source, m.Tag)
 	destImage := fmt.Sprintf("%s:%s", m.Destination, copiedTag)
-	digest, err := registry.SkopeoInspect(
+	digest, err := skopeo.Inspect(
 		"docker://"+sourceImage, "--format", "{{ .Digest }}")
 	if err != nil {
 		return fmt.Errorf("initImageListByV1: %w", err)
@@ -626,8 +626,9 @@ func (m *Mirror) updateDestManifest() error {
 	}
 
 	// docker buildx imagetools create --tag=registry/repository:tag <images>
-	if err := registry.DockerBuildx(args...); err != nil {
-		return fmt.Errorf("updateDestManifest: %w", err)
-	}
+	// if err := registry.DockerBuildx(args...); err != nil {
+	// 	return fmt.Errorf("updateDestManifest: %w", err)
+	// }
+	// TODO:
 	return nil
 }

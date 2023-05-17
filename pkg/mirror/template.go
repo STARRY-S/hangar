@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cnrancher/hangar/pkg/image"
+	"github.com/cnrancher/hangar/pkg/mirror/image"
 	u "github.com/cnrancher/hangar/pkg/utils"
 	"github.com/containers/image/v5/manifest"
 	"github.com/sirupsen/logrus"

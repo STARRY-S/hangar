@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/cnrancher/hangar/pkg/registry"
+	"github.com/cnrancher/hangar/pkg/skopeo"
 	u "github.com/cnrancher/hangar/pkg/utils"
 	"github.com/containers/image/v5/manifest"
 	"github.com/sirupsen/logrus"
@@ -87,7 +87,7 @@ func (m *Mirror) validateMirrorImages() error {
 		}
 		// skopeo inspect docker//<dest>@sha256:<dest-digest> --raw
 		destImage := fmt.Sprintf("docker://%s@%s", m.Destination, dstDigest)
-		_, err := registry.SkopeoInspect(destImage, "--raw")
+		_, err := skopeo.Inspect(destImage, "--raw")
 		if err != nil {
 			return fmt.Errorf("failed to inspect dest image [%s:%s]: %v",
 				m.Destination, m.Tag, err)
@@ -139,7 +139,7 @@ func (m *Mirror) validateMirrorImages() error {
 		for _, v := range dstSpecs {
 			// skopeo inspect docker//<dest>@sha256:<dest-digest> --raw
 			destImage := fmt.Sprintf("docker://%s@%s", m.Destination, v.Digest)
-			_, err := registry.SkopeoInspect(destImage, "--raw")
+			_, err := skopeo.Inspect(destImage, "--raw")
 			if err != nil {
 				logrus.WithField("M_ID", m.MID).
 					Errorf("failed to inspect dest image [%s:%s]: %v",
@@ -174,7 +174,7 @@ func (m *Mirror) validateLoadImages() error {
 	// source image list is already initialized, need to inspect dest image
 	// Get destination manifest
 	inspectDestImage := fmt.Sprintf("docker://%s:%s", m.Destination, m.Tag)
-	out, err := registry.SkopeoInspect(inspectDestImage, "--raw")
+	out, err := skopeo.Inspect(inspectDestImage, "--raw")
 	if err != nil {
 		return fmt.Errorf("[%s:%s]: destination manifest does not exists",
 			m.Destination, m.Tag)

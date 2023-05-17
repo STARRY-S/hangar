@@ -8,8 +8,9 @@ import (
 	"strings"
 
 	"github.com/cnrancher/hangar/pkg/config"
+	"github.com/cnrancher/hangar/pkg/credential"
+	"github.com/cnrancher/hangar/pkg/harbor"
 	"github.com/cnrancher/hangar/pkg/mirror"
-	"github.com/cnrancher/hangar/pkg/registry"
 	"github.com/cnrancher/hangar/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -162,8 +163,8 @@ func (cc *mirrorCmd) createHarborProject() {
 			} else {
 				url = "http://" + url
 			}
-			user, passwd, _ := registry.GetDockerPassword(dstReg)
-			err := registry.CreateHarborProject(dstProj, url, user, passwd)
+			user, passwd, _ := credential.GetRegistryCredential(dstReg)
+			err := harbor.CreateProject(dstProj, url, user, passwd)
 			if err != nil {
 				logrus.Errorf("failed to create harbor project %q: %q",
 					dstProj, err)
