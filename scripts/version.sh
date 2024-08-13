@@ -30,14 +30,3 @@ fi
 
 SUFFIX="-${OS}-${ARCH}"
 REPO=${REPO:-cnrancher}
-
-DEBUG=${DEBUG:-""}
-if [[ -z "${DEBUG}" ]]; then
-    case "${VERSION}" in
-    *rc* | *alpha* | *beta* | *dirty* | *v0.0.0* )
-        DEBUG="true"
-        ;;
-    *)
-        ;;
-    esac
-fi

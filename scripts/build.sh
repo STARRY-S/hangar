@@ -25,7 +25,7 @@ fi
 if [[ -n "${COMMIT}" ]]; then
     BUILD_LDFAGS="${BUILD_LDFAGS} -X 'github.com/cnrancher/hangar/pkg/utils.GitCommit=${COMMIT}'"
 fi
-if [[ "${VERSION}" != v0.0.0* ]] && [[ -n "${VERSION}" ]]; then
+if [[ -n "${VERSION}" ]]; then
     BUILD_LDFAGS="${BUILD_LDFAGS} -X 'github.com/cnrancher/hangar/pkg/utils.Version=${VERSION}'"
 fi
 
@@ -34,6 +34,8 @@ if [[ -n "${DISABLE_CGO:-}" ]]; then
     BUILD_TAGS="containers_image_openpgp"
     BUILD_LDFAGS="${BUILD_LDFAGS} -extldflags='-static'"
     echo "CGO Disabled with '-static' extldflags."
+else
+    export CGO_ENABLED=1
 fi
 
 go build \

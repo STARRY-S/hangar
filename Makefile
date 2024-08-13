@@ -1,15 +1,8 @@
-TARGETS := ci build test validate
+TARGETS := ci build test verify image
 .PHONY: $(TARGETS) $(TEST_TARGETS) validation-test clean help
 
-.dapper:
-	@echo Downloading dapper
-	@curl -sL https://releases.rancher.com/dapper/latest/dapper-`uname -s`-`uname -m` > .dapper.tmp
-	@chmod +x .dapper.tmp
-	@./.dapper.tmp -v
-	@mv .dapper.tmp .dapper
-
-$(TARGETS): .dapper
-	@./.dapper $@
+$(TARGETS):
+	@./scripts/entry.sh $@
 
 validation-test: .dapper
 	@./.dapper -f Dockerfile.test.dapper

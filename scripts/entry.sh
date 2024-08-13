@@ -10,5 +10,3 @@ if [[ -e ./scripts/$1.sh ]]; then
 else
     exec "$@"
 fi
-
-chown -R $DAPPER_UID:$DAPPER_GID .

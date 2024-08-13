@@ -1,0 +1,8 @@
+bin
+dist
+.vscode
+.github
+*.txt
+*.csv
+*.json
+hangar
