@@ -43,13 +43,13 @@ hangar convert-list \
 # The converted image list is:
 docker.io/library/mysql registry.example.io/library/mysql 8
 docker.io/library/nginx registry.example.io/library/nginx latest`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			if err := cc.setupFlags(); err != nil {
 				return err
 			}
@@ -117,7 +117,7 @@ func (cc *convertListCmd) run() error {
 		}
 		if len(spec) != 2 {
 			if len(spec) == 1 {
-				spec = append(spec, "latest")
+				spec = append(spec, utils.DefaultTag)
 			} else {
 				logrus.Warnf("Ignore line: %q: format unknow", l)
 				continue

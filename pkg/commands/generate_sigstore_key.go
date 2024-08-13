@@ -32,13 +32,13 @@ func newgenerateSigstoreKeyCmd() *generateSigstoreKeyCmd {
 		Short:   "Generate a sigstore key-pair for signing images",
 		Long:    ``,
 		Example: `hangar generate-sigstore-key --prefix sigstore`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			if err := cc.run(); err != nil {
 				return err
 			}
@@ -109,7 +109,7 @@ func (cc *generateSigstoreKeyCmd) run() error {
 	if err := os.WriteFile(privateKeyPath, keys.PrivateKey, 0600); err != nil {
 		return fmt.Errorf("failed to write private key to %q: %w", privateKeyPath, err)
 	}
-	if err := os.WriteFile(publicKeyPath, keys.PublicKey, 0644); err != nil {
+	if err := os.WriteFile(publicKeyPath, keys.PublicKey, 0600); err != nil {
 		return fmt.Errorf("failed to write public key to %q: %w", publicKeyPath, err)
 	}
 	logrus.Infof("Write sigstore key-pair to %q, %q", publicKeyPath, privateKeyPath)

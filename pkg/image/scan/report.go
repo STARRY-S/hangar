@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/cnrancher/hangar/pkg/utils"
 	"github.com/opencontainers/go-digest"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	gospdx "github.com/spdx/tools-golang/spdx/v2/v2_3"
@@ -75,7 +76,7 @@ func (r *Result) Pass() bool {
 type ImageResult struct {
 	Digest          digest.Digest    `json:"digest,omitempty" yaml:"digest,omitempty"`
 	Platform        Platform         `json:"platform,omitempty" yaml:"platform,omitempty"`
-	SBOM_SPDX       *gospdx.Document `json:"spdx,omitempty" yaml:"spdx,omitempty"`
+	SbomSpdx        *gospdx.Document `json:"spdx,omitempty" yaml:"spdx,omitempty"`
 	Vulnerabilities []Vulnerability  `json:"vulnerabilities,omitempty" yaml:"vulnerabilities,omitempty"`
 }
 
@@ -164,7 +165,7 @@ func (r *Report) WriteCSV(f io.Writer) error {
 	return nil
 }
 
-func (r *Report) WriteSPDX_CSV(f io.Writer) error {
+func (r *Report) WriteSpdxCsv(f io.Writer) error {
 	line := []string{
 		"image",       // 0
 		"arch",        // 1
@@ -190,7 +191,7 @@ func (r *Report) WriteSPDX_CSV(f io.Writer) error {
 		}
 		reference := result.Reference
 		for _, image := range result.Images {
-			s := image.SBOM_SPDX
+			s := image.SbomSpdx
 			if len(s.Packages) == 0 {
 				continue
 			}
@@ -231,25 +232,25 @@ func (r *Result) Append(image *ImageResult) {
 }
 
 func NewImageResult(
-	ctx context.Context, report *types.Report, format string, opt *ScanOption,
+	ctx context.Context, report *types.Report, format string, opt *Option,
 ) (*ImageResult, error) {
 	image := &ImageResult{
 		Digest:          opt.Digest,
 		Platform:        opt.Platform,
-		SBOM_SPDX:       nil,
+		SbomSpdx:        nil,
 		Vulnerabilities: nil,
 	}
 	switch format {
-	case "spdx-json", "spdx-csv":
+	case utils.ScanFormatSPDXCsv, utils.ScanFormatSPDXJson:
 		// Only generate SPDX for SBOM outputs.
 		var err error
 		m := spdx.NewMarshaler("")
-		image.SBOM_SPDX, err = m.MarshalReport(ctx, *report)
+		image.SbomSpdx, err = m.MarshalReport(ctx, *report)
 		if err != nil {
 			return nil, fmt.Errorf("spdx Marshal: %w", err)
 		}
 		// Modify the creator tool info to trivy without version info.
-		for _, c := range image.SBOM_SPDX.CreationInfo.Creators {
+		for _, c := range image.SbomSpdx.CreationInfo.Creators {
 			if c.CreatorType == "Tool" {
 				c.Creator = "trivy"
 			}

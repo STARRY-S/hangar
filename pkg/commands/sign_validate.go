@@ -51,13 +51,13 @@ hangar validate \
 	--arch amd64,arm64 \
 	--os linux \
 	--exact-repository "registry.example.io/library/NAME"`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			h, err := cc.prepareHangar()
 			if err != nil {
 				return err

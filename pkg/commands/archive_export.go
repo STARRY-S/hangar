@@ -42,13 +42,13 @@ hangar archive export \
 	--file IMAGE_LIST.txt \
 	--source SAVED_ARCHIVE.zip \
 	--destination EXPORT_OUTPUT.zip`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			if err := cc.run(); err != nil {
 				return err
 			}

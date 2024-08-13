@@ -45,7 +45,7 @@ Aiming to simplify the process of copying container images between registries.
 
 https://hangar.cnrancher.com
 `,
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, _ []string) {
 			cmd.Help()
 		},
 	})

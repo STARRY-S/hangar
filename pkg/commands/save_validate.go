@@ -26,13 +26,13 @@ hangar save validate \
 	--destination SAVED_ARCHIVE.zip \
 	--arch amd64,arm64 \
 	--os linux`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			h, err := cc.prepareHangar()
 			if err != nil {
 				return err

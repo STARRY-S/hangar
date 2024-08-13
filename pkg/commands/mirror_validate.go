@@ -26,7 +26,7 @@ hangar mirror validate \
 	--destination DESTINATION_REGISTRY \
 	--arch amd64,arm64 \
 	--os linux`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
@@ -38,7 +38,7 @@ hangar mirror validate \
 					" signature with sigstore public key file instead.")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			h, err := cc.mirrorCmd.prepareHangar()
 			if err != nil {
 				return err

@@ -37,13 +37,13 @@ hangar archive merge \
 	--file ARCHIVE_1.zip \
 	--file ARCHIVE_2.zip \
 	--output MERGE_OUTPUT.zip`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			if err := cc.run(); err != nil {
 				return err
 			}
@@ -78,7 +78,7 @@ func (cc *archiveMergeCmd) run() error {
 
 func (cc *archiveMergeCmd) merge() error {
 	var (
-		readers  []*archive.Reader
+		readers  = []*archive.Reader{}
 		writer   *archive.Writer
 		err      error
 		newIndex = archive.NewIndex()

@@ -37,6 +37,14 @@ const (
 	CacheCloneRepoDirectory = "charts-repo-cache"
 	MaxWorkerNum            = 20
 	MinWorkerNum            = 1
+
+	DefaultTag      = "latest"
+	DefaultProject  = "library"
+	DefaultRegistry = "docker.io"
+	LocalHost       = "localhost"
+
+	ScanFormatSPDXJson = "spdx-json"
+	ScanFormatSPDXCsv  = "spdx-csv"
 )
 
 func init() {
@@ -115,7 +123,7 @@ func ConstructRegistry(image, registryOverride string) string {
 			s = append(s, v)
 		}
 	}
-	if strings.ContainsAny(s[0], ".:") || s[0] == "localhost" {
+	if strings.ContainsAny(s[0], ".:") || s[0] == LocalHost {
 		if registryOverride != "" {
 			s[0] = registryOverride
 		}
@@ -159,7 +167,7 @@ func ReplaceProjectName(image, project string) string {
 			s = append([]string{project}, s...)
 		}
 	case 2:
-		if strings.ContainsAny(s[0], ".:") || s[0] == "localhost" {
+		if strings.ContainsAny(s[0], ".:") || s[0] == LocalHost {
 			if project != "" {
 				s = []string{s[0], project, s[1]}
 			}
@@ -198,17 +206,17 @@ func GetProjectName(image string) string {
 
 	switch len(s) {
 	case 1:
-		return "library"
+		return DefaultProject
 	case 2:
-		if strings.ContainsAny(s[0], ".:") || s[0] == "localhost" {
-			return "library"
+		if strings.ContainsAny(s[0], ".:") || s[0] == LocalHost {
+			return DefaultProject
 		} else {
 			return s[0]
 		}
 	case 3:
 		return s[1]
 	}
-	return "library"
+	return DefaultProject
 }
 
 // GetRegistryName gets the registry name of the image, example:
@@ -230,7 +238,7 @@ func GetRegistryName(image string) string {
 	case 1:
 		return DockerHubRegistry
 	case 2:
-		if strings.ContainsAny(s[0], ".:") || s[0] == "localhost" {
+		if strings.ContainsAny(s[0], ".:") || s[0] == LocalHost {
 			return s[0]
 		} else {
 			return DockerHubRegistry
@@ -537,7 +545,7 @@ func CopyPolicy(src *signature.Policy) (*signature.Policy, error) {
 }
 
 func HTTPClientDo(
-	ctx context.Context, client *http.Client, req *http.Request,
+	client *http.Client, req *http.Request,
 ) (*http.Response, error) {
 	logrus.Debugf("client.Do: %v", req.URL.String())
 	resp, err := client.Do(req)
@@ -572,7 +580,7 @@ func DetectURL(
 	client := &http.Client{
 		Timeout: time.Second * 5,
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure}, // #nosec G402
 			Proxy:           http.ProxyFromEnvironment,
 		},
 	}
@@ -584,7 +592,7 @@ func DetectURL(
 	}
 
 	pingFunc := func() (*http.Response, error) {
-		resp, err := HTTPClientDo(ctx, client, req)
+		resp, err := HTTPClientDo(client, req)
 		if err == nil {
 			return resp, nil
 		}
@@ -599,7 +607,7 @@ func DetectURL(
 		if err != nil {
 			return nil, err
 		}
-		resp, err = HTTPClientDo(ctx, client, req)
+		resp, err = HTTPClientDo(client, req)
 		if err != nil {
 			return nil, err
 		}

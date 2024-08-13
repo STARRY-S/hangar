@@ -402,7 +402,7 @@ func PickImagesFromValuesMap(
 			return
 		}
 		if tag == "" {
-			tag = "latest"
+			tag = utils.DefaultTag
 		}
 		imageName := fmt.Sprintf("%s:%s", repository, tag)
 		// By default, images are added to the generic images list ("linux").

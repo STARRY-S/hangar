@@ -27,13 +27,13 @@ func newLoginCmd() *loginCmd {
 		Use:     "login registry-url",
 		Short:   "Login to registry server",
 		Example: "  hangar login docker.io",
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, args []string) error {
 			ctx, cancel := cc.baseCmd.ctxWithTimeout(cc.timeout)
 			defer cancel()
 			cc.loginOpts.Stdin = os.Stdin

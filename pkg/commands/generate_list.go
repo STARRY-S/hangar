@@ -67,13 +67,13 @@ You can also download the KDM JSON file and clone chart repos manually:
         --chart="./chart-repo-dir" \
         --system-chart="./system-chart-repo-dir" \
         --kdm="./kdm-data.json"`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			if err := cc.setupFlags(); err != nil {
 				return err
 			}
@@ -420,7 +420,7 @@ func (cc *generateListCmd) finish() error {
 }
 
 func getSourcesList(imageSources map[string]bool) string {
-	var sources []string
+	var sources = []string{}
 	for source := range imageSources {
 		sources = append(sources, source)
 	}

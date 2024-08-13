@@ -28,13 +28,13 @@ func newArchiveLsCmd() *archiveLsCmd {
 		Example: `
 # Show images in archive file:
 hangar archive ls -f SAVED_ARCHIVE.zip`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, args []string) error {
 			if err := cc.run(args); err != nil {
 				return err
 			}

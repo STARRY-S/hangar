@@ -27,13 +27,13 @@ func newLogoutCmd() *logoutCmd {
 		Use:     "logout registry-url",
 		Short:   "Logout from registry server",
 		Example: "  hangar logout docker.io",
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, args []string) error {
 			ctx, cancel := cc.baseCmd.ctxWithTimeout(cc.timeout)
 			defer cancel()
 			cc.logoutOpts.Stdout = os.Stdout

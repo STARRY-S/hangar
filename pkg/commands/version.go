@@ -19,13 +19,13 @@ func newVersionCmd() *versionCmd {
 		Use:     "version",
 		Short:   "Show version",
 		Example: "  hangar version",
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, _ []string) {
 			fmt.Printf("hangar version %s\n", getVersion())
 		},
 	})

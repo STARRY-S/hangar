@@ -34,13 +34,13 @@ hangar inspect [image-reference]
 
 # Inspect RAW docker image maniefest:
 hangar inspect docker://docker.io/cnrancher/hangar:latest --raw`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRun: func(_ *cobra.Command, _ []string) {
 			if cc.debug {
 				logrus.SetLevel(logrus.DebugLevel)
 				logrus.Debugf("Debug output enabled")
 			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, args []string) error {
 			if err := cc.run(args); err != nil {
 				return err
 			}
