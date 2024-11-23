@@ -1,0 +1,75 @@
+name: Validation Test
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  harbor-test:
+    runs-on: ubuntu-latest
+    services:
+      registry:
+        image: "registry:2"
+        ports:
+          - 5000:5000
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Install Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y util-linux libgpgme-dev libassuan-dev \
+          libbtrfs-dev libdevmapper-dev pkg-config gcc iproute2
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+    - name: Build single target
+      env:
+        TAG: ${{ github.ref_name }}
+        COMMIT: ${{ github.sha }}
+      uses: goreleaser/goreleaser-action@v6
+      with:
+        distribution: goreleaser
+        version: "~> v2"
+        args: build --clean --snapshot --single-target
+    - name: Setup testing environment
+      run: |
+        set -x
+        lscpu
+        free -m
+
+        pip install pytest tox
+        pip install -r test/requirements.txt
+        curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin
+        sudo mkdir -p /etc/containers/registries.d
+        sudo cp package/default-policy.json /etc/containers/policy.json
+        sudo cp package/registries.d/default.yaml /etc/containers/registries.d/default.yaml
+        sudo cp ./dist/hangar_linux_amd64*/hangar /usr/local/bin/
+
+        # TODO: Workaround for permission denied when accessing '/run/containers/1001/auth.json'
+        sudo mkdir -p /run/containers/$UID
+        sudo chmod 755 /run/
+        sudo chmod 755 /run/containers
+        sudo chmod 755 /run/containers/$UID
+        sudo chown $UID /run/containers/$UID
+        sudo ls -al /run/containers/$UID
+
+        hangar version
+        echo "Done setup validation test environment"
+    - name: Distribution Registry Validation test
+      env:
+        REGISTRY_URL: 127.0.0.1:5000
+        REGISTRY_AUTH_FILE: /home/runner/.config/containers/auth.json
+      run: |
+        cd test/
+        tox -e distribution_registry
